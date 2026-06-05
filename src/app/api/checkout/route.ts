@@ -3,6 +3,16 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { createCheckoutSession, isStripeConfigured } from "@/lib/stripe"
 
+function getBaseUrl(req: Request): string {
+  // Use NEXT_PUBLIC_APP_URL if available, otherwise construct from request
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL
+  }
+  const host = req.headers.get("host") || "localhost:3000"
+  const protocol = host.includes("localhost") ? "http" : "https"
+  return `${protocol}://${host}`
+}
+
 export async function POST(req: Request) {
   try {
     const session = await auth()
@@ -102,6 +112,8 @@ export async function POST(req: Request) {
       })
     }
 
+    const baseUrl = getBaseUrl(req)
+
     // Crear sesión de Stripe
     const stripeSession = await createCheckoutSession(
       cart.items.map((item) => ({
@@ -114,8 +126,8 @@ export async function POST(req: Request) {
         },
         quantity: item.quantity,
       })),
-      `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}&order_id=${order.id}`,
-      `${process.env.NEXT_PUBLIC_APP_URL}/carrito`,
+      `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&order_id=${order.id}`,
+      `${baseUrl}/carrito`,
       { orderId: order.id }
     )
 
