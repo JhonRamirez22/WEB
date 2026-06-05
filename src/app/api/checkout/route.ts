@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
-import { stripe, isStripeConfigured } from "@/lib/stripe"
+import { createCheckoutSession, isStripeConfigured } from "@/lib/stripe"
 
 export async function POST(req: Request) {
   try {
@@ -94,7 +94,7 @@ export async function POST(req: Request) {
     })
 
     // Si Stripe no está configurado, devolver orden sin checkout URL
-    if (!isStripeConfigured || !stripe) {
+    if (!isStripeConfigured) {
       return NextResponse.json({
         orderId: order.id,
         checkoutUrl: null,
@@ -103,9 +103,8 @@ export async function POST(req: Request) {
     }
 
     // Crear sesión de Stripe
-    const stripeSession = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: cart.items.map((item) => ({
+    const stripeSession = await createCheckoutSession(
+      cart.items.map((item) => ({
         price_data: {
           currency: "mxn",
           product_data: {
@@ -115,13 +114,18 @@ export async function POST(req: Request) {
         },
         quantity: item.quantity,
       })),
-      mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}&order_id=${order.id}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/carrito`,
-      metadata: {
+      `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}&order_id=${order.id}`,
+      `${process.env.NEXT_PUBLIC_APP_URL}/carrito`,
+      { orderId: order.id }
+    )
+
+    if (!stripeSession) {
+      return NextResponse.json({
         orderId: order.id,
-      },
-    })
+        checkoutUrl: null,
+        message: "Stripe no está configurado. Orden creada como pendiente de pago manual.",
+      })
+    }
 
     // Actualizar orden con payment intent
     await prisma.order.update({
