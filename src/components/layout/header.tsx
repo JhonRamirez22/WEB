@@ -135,10 +135,8 @@ export function Header() {
           {/* User Menu */}
           {session ? (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="inline-flex items-center justify-center rounded-lg text-sm font-medium h-8 w-8 hover:bg-zinc-100">
-                  <User className="h-4 w-4 text-zinc-500" />
-                </button>
+              <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-lg text-sm font-medium h-8 w-8 hover:bg-zinc-100">
+                <User className="h-4 w-4 text-zinc-500" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 rounded-xl">
                 <div className="px-3 py-2">
