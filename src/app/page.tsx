@@ -45,7 +45,7 @@ export default async function HomePage() {
         <HeroSection />
 
         {/* TRUST BAR */}
-        <section className="border-y border-border bg-card">
+        <section className="border-y border-border bg-card/60">
           <div className="container mx-auto px-6 lg:px-16 max-w-[1400px]">
             <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-border">
               {[
@@ -74,13 +74,13 @@ export default async function HomePage() {
             <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-16">
               <Reveal>
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground mb-4">
+                  <p className="text-xs font-medium uppercase tracking-[0.25em] text-muted-foreground mb-4">
                     Selección del Mes
                   </p>
                   <h2 className="font-serif text-4xl lg:text-5xl text-foreground leading-none">
                     Fragancias
                     <br />
-                    <span className="italic font-normal">Destacadas</span>
+                    <span className="italic font-normal gold-gradient">Destacadas</span>
                   </h2>
                 </div>
               </Reveal>
@@ -112,13 +112,13 @@ export default async function HomePage() {
         </section>
 
         {/* BRAND SHOWCASE — Editorial grid */}
-        <section className="py-12 lg:py-16 bg-card border-y border-border">
+        <section className="py-12 lg:py-16 bg-card/60 border-y border-border">
           <div className="container mx-auto px-6 lg:px-16 max-w-[1400px]">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border">
               {["Chanel", "Dior", "Creed", "Tom Ford", "YSL", "Hermès", "Le Labo", "Byredo"].map((brand, i) => (
                 <div key={brand} className="bg-card py-10 flex items-center justify-center">
                   <Reveal delay={i * 0.05}>
-                    <span className="font-serif text-xl tracking-wider text-muted-foreground/50 hover:text-foreground transition-colors cursor-default select-none">
+                    <span className="font-serif text-xl tracking-[0.2em] uppercase text-muted-foreground/40 hover:text-foreground transition-colors cursor-default select-none">
                       {brand}
                     </span>
                   </Reveal>
@@ -129,7 +129,7 @@ export default async function HomePage() {
         </section>
 
         {/* CATEGORIES — Dramatic split */}
-        <section className="py-24 lg:py-32">
+        <section className="py-24 lg:py-32 texture-paper">
           <div className="container mx-auto px-6 lg:px-16 max-w-[1400px]">
             <Reveal>
               <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground mb-4">
@@ -150,7 +150,7 @@ export default async function HomePage() {
                   <Link href={cat.href} className="group block">
                     <div className="relative aspect-[4/5] overflow-hidden rounded-sm mb-4">
                       <img src={cat.img} alt={cat.label} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-transparent to-transparent" />
                       <div className="absolute bottom-0 left-0 right-0 p-6">
                         <h3 className="font-serif text-2xl text-white">{cat.label}</h3>
                         <p className="text-sm text-white/70 mt-1 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -168,7 +168,7 @@ export default async function HomePage() {
 
         {/* QUIZ CTA */}
         <section className="py-24 lg:py-32 bg-foreground text-background relative overflow-hidden">
-          <div className="absolute inset-0 opacity-[0.03] noise" />
+          <div className="absolute inset-0 opacity-[0.06] noise" />
           <div className="container mx-auto px-6 lg:px-16 max-w-[1400px] relative z-10">
             <div className="max-w-2xl">
               <Reveal>

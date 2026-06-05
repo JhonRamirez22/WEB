@@ -26,7 +26,7 @@ export function Header() {
 
   return (
     <motion.header
-      className="sticky top-0 z-50 w-full bg-background/90 backdrop-blur-xl border-b border-border/50"
+      className="sticky top-0 z-50 w-full bg-background/85 backdrop-blur-xl border-b border-border/50"
       initial={{ y: -16, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
@@ -34,19 +34,19 @@ export function Header() {
       <div className="container mx-auto px-6 lg:px-16 h-16 flex items-center justify-between max-w-[1400px]">
         {/* Logo */}
         <Link href="/" className="flex items-center">
-          <span className="font-serif text-xl tracking-tight text-foreground">
+          <span className="font-serif text-xl tracking-[0.08em] uppercase text-foreground">
             L&apos;Essence
           </span>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
-          {[
-            { label: "Catálogo", href: "/catalogo" },
-            { label: "Hombre", href: "/catalogo?gender=MASCULINO" },
-            { label: "Mujer", href: "/catalogo?gender=FEMENINO" },
-            { label: "Nicho", href: "/catalogo?isPremium=true" },
-          ].map((item) => (
+            {[
+              { label: "Catálogo", href: "/catalogo" },
+              { label: "Hombre", href: "/catalogo?gender=MASCULINO" },
+              { label: "Mujer", href: "/catalogo?gender=FEMENINO" },
+              { label: "Nicho", href: "/catalogo?isPremium=true" },
+            ].map((item) => (
             <Link
               key={item.label}
               href={item.href}
@@ -106,9 +106,9 @@ export function Header() {
           {/* User Menu */}
           {session ? (
             <DropdownMenu>
-              <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-sm size-9 hover:bg-secondary" aria-label="Menú de usuario">
-                <User className="size-4 text-muted-foreground" />
-              </DropdownMenuTrigger>
+            <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-sm size-9 hover:bg-secondary" aria-label="Menú de usuario">
+              <User className="size-4 text-muted-foreground" />
+            </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <div className="px-3 py-2">
                   <p className="text-sm font-medium">{session.user.name}</p>

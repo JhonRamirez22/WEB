@@ -22,7 +22,7 @@ export function HeroSection() {
   }, [prefersReduced])
 
   return (
-    <section className="relative min-h-screen flex items-end pb-16 md:pb-24 lg:pb-32 overflow-hidden">
+    <section className="relative min-h-screen flex items-end pb-16 md:pb-24 lg:pb-32 overflow-hidden bg-background">
       {/* Full-bleed image layer */}
       <div className="absolute inset-0">
         {heroImages.map((img, i) => (
@@ -42,8 +42,9 @@ export function HeroSection() {
             />
           </motion.div>
         ))}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-transparent" />
+        <div className="absolute inset-0 opacity-[0.06] noise" />
       </div>
 
       {/* Content */}
@@ -55,7 +56,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
         >
           <motion.div
-            className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full bg-background/80 backdrop-blur-sm border border-border/50"
+            className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full bg-card/70 backdrop-blur-sm border border-border/50"
             initial={prefersReduced ? {} : { opacity: 0, scale: 0.9 }}
             animate={prefersReduced ? {} : { opacity: 1, scale: 1 }}
             transition={{ delay: 0.5, duration: 0.4 }}
@@ -67,19 +68,19 @@ export function HeroSection() {
           </motion.div>
 
           <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-none text-foreground mb-6">
-            El arte de
+            L'Essence
             <br />
-            <span className="italic font-normal">la perfumería</span>
+            <span className="italic font-normal gold-gradient">Atelier</span>
           </h1>
 
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-lg mb-10 font-light">
-            Fragancias de nicho seleccionadas por maestros perfumistas. Cada esencia, una obra maestra. Cada frasco, una declaración.
+            Perfumería de autor. Ediciones limitadas, materias primas raras y una curaduría que convierte cada aroma en una pieza de colección.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
             <Link href="/catalogo">
               <motion.button
-                className="px-8 py-4 bg-foreground text-background rounded-full text-sm font-medium tracking-wide hover:bg-foreground/90 transition-colors inline-flex items-center gap-2 group"
+                className="px-8 py-4 bg-primary text-primary-foreground rounded-full text-sm font-medium tracking-[0.12em] uppercase hover:bg-primary/90 transition-colors inline-flex items-center gap-2 group"
                 whileHover={{ scale: prefersReduced ? 1 : 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -89,7 +90,7 @@ export function HeroSection() {
             </Link>
             <Link href="/quiz-olfativo">
               <motion.button
-                className="px-8 py-4 rounded-full text-sm font-medium tracking-wide border border-border hover:bg-secondary transition-colors"
+                className="px-8 py-4 rounded-full text-sm font-medium tracking-[0.12em] uppercase border border-border hover:bg-secondary transition-colors"
                 whileHover={{ scale: prefersReduced ? 1 : 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >

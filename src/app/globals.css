@@ -49,73 +49,74 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* ===== Luxury Warm Palette ===== */
+/* ===== Luxury Noir Palette ===== */
 :root {
-  --background: #FAF8F5;
-  --foreground: #1A1816;
-  --card: #FFFFFF;
-  --card-foreground: #1A1816;
-  --popover: #FFFFFF;
-  --popover-foreground: #1A1816;
-  --primary: #0D9488;
-  --primary-foreground: #FAF8F5;
-  --secondary: #F5F2ED;
-  --secondary-foreground: #1A1816;
-  --muted: #F5F2ED;
-  --muted-foreground: #8C8986;
-  --accent: #F5F2ED;
-  --accent-foreground: #1A1816;
-  --destructive: #DC2626;
-  --border: #E6E3DD;
-  --input: #E6E3DD;
-  --ring: #0D9488;
-  --chart-1: #0D9488;
-  --chart-2: #C9A96E;
-  --chart-3: #78716C;
-  --chart-4: #44403C;
-  --chart-5: #292524;
-  --radius: 0.625rem;
-  --sidebar: #FAF8F5;
-  --sidebar-foreground: #1A1816;
-  --sidebar-primary: #0D9488;
-  --sidebar-primary-foreground: #FAF8F5;
-  --sidebar-accent: #F5F2ED;
-  --sidebar-accent-foreground: #1A1816;
-  --sidebar-border: #E6E3DD;
-  --sidebar-ring: #0D9488;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.03);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.04);
-  --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.06);
-  --shadow-xl: 0 20px 40px -5px rgba(0,0,0,0.08);
+  --background: #0E0C0A;
+  --foreground: #F4EFEA;
+  --card: #141210;
+  --card-foreground: #F4EFEA;
+  --popover: #141210;
+  --popover-foreground: #F4EFEA;
+  --primary: #C7A977;
+  --primary-foreground: #0E0C0A;
+  --secondary: #1B1916;
+  --secondary-foreground: #F4EFEA;
+  --muted: #1B1916;
+  --muted-foreground: #B7B1A9;
+  --accent: #1B1916;
+  --accent-foreground: #F4EFEA;
+  --destructive: #E64A4A;
+  --border: #2A2622;
+  --input: #2A2622;
+  --ring: #C7A977;
+  --chart-1: #C7A977;
+  --chart-2: #7E6F5C;
+  --chart-3: #60574C;
+  --chart-4: #3F392F;
+  --chart-5: #2A2622;
+  --radius: 0.5rem;
+  --sidebar: #0E0C0A;
+  --sidebar-foreground: #F4EFEA;
+  --sidebar-primary: #C7A977;
+  --sidebar-primary-foreground: #0E0C0A;
+  --sidebar-accent: #1B1916;
+  --sidebar-accent-foreground: #F4EFEA;
+  --sidebar-border: #2A2622;
+  --sidebar-ring: #C7A977;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.15);
+  --shadow-md: 0 6px 12px rgba(0,0,0,0.25);
+  --shadow-lg: 0 20px 40px rgba(0,0,0,0.35);
+  --shadow-xl: 0 40px 80px rgba(0,0,0,0.4);
 }
 
+/* Dark mode = same noir palette */
 .dark {
-  --background: #0D0C0A;
-  --foreground: #F5F2ED;
-  --card: #1A1816;
-  --card-foreground: #F5F2ED;
-  --popover: #1A1816;
-  --popover-foreground: #F5F2ED;
-  --primary: #14B8A6;
-  --primary-foreground: #0D0C0A;
-  --secondary: #1A1816;
-  --secondary-foreground: #F5F2ED;
-  --muted: #1A1816;
-  --muted-foreground: #A8A5A2;
-  --accent: #1A1816;
-  --accent-foreground: #F5F2ED;
-  --destructive: #EF4444;
-  --border: #292524;
-  --input: #292524;
-  --ring: #14B8A6;
-  --sidebar: #0D0C0A;
-  --sidebar-foreground: #F5F2ED;
-  --sidebar-primary: #14B8A6;
-  --sidebar-primary-foreground: #0D0C0A;
-  --sidebar-accent: #1A1816;
-  --sidebar-accent-foreground: #F5F2ED;
-  --sidebar-border: #292524;
-  --sidebar-ring: #14B8A6;
+  --background: #0E0C0A;
+  --foreground: #F4EFEA;
+  --card: #141210;
+  --card-foreground: #F4EFEA;
+  --popover: #141210;
+  --popover-foreground: #F4EFEA;
+  --primary: #C7A977;
+  --primary-foreground: #0E0C0A;
+  --secondary: #1B1916;
+  --secondary-foreground: #F4EFEA;
+  --muted: #1B1916;
+  --muted-foreground: #B7B1A9;
+  --accent: #1B1916;
+  --accent-foreground: #F4EFEA;
+  --destructive: #E64A4A;
+  --border: #2A2622;
+  --input: #2A2622;
+  --ring: #C7A977;
+  --sidebar: #0E0C0A;
+  --sidebar-foreground: #F4EFEA;
+  --sidebar-primary: #C7A977;
+  --sidebar-primary-foreground: #0E0C0A;
+  --sidebar-accent: #1B1916;
+  --sidebar-accent-foreground: #F4EFEA;
+  --sidebar-border: #2A2622;
+  --sidebar-ring: #C7A977;
 }
 
 /* ===== Base Layer ===== */
@@ -219,12 +220,12 @@
 
 /* ===== Gold accent gradient ===== */
 .gold-gradient {
-  background: linear-gradient(135deg, #C9A96E 0%, #E2D4B7 50%, #C9A96E 100%);
+  background: linear-gradient(135deg, #C7A977 0%, #E6D2A6 50%, #C7A977 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gold-border {
-  border-image: linear-gradient(135deg, #C9A96E, #E2D4B7, #C9A96E) 1;
+  border-image: linear-gradient(135deg, #C7A977, #E6D2A6, #C7A977) 1;
 }

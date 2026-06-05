@@ -60,7 +60,7 @@ export function PerfumeCard({ perfume }: PerfumeCardProps) {
           )}
           {v?.stock === 0 && (
             <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex items-center justify-center">
-              <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground bg-background/90 px-4 py-2 rounded-sm">
+              <span className="text-[10px] font-medium uppercase tracking-[0.25em] text-muted-foreground bg-background/90 px-4 py-2 rounded-sm">
                 Agotado
               </span>
             </div>
@@ -69,7 +69,7 @@ export function PerfumeCard({ perfume }: PerfumeCardProps) {
 
         {/* Content */}
         <div className="flex flex-col flex-1 px-0.5">
-          <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-muted-foreground mb-2">
+          <p className="text-[10px] font-medium uppercase tracking-[0.25em] text-muted-foreground mb-2">
             {perfume.brand.name}
           </p>
           <h3 className="font-serif text-lg leading-snug text-foreground group-hover:text-primary transition-colors duration-200 mb-3">
