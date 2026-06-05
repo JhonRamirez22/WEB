@@ -49,9 +49,13 @@ export default function RootLayout({
     <html
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <a href="#main-content" className="skip-to-content">
+          Saltar al contenido principal
+        </a>
         <Providers>
           {children}
         </Providers>

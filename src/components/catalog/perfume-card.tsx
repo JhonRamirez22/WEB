@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { motion } from "motion/react"
+import { motion, useReducedMotion } from "motion/react"
 import { Badge } from "@/components/ui/badge"
 import { Star, Check } from "lucide-react"
 import { useState, useCallback } from "react"
@@ -35,21 +35,23 @@ export function PerfumeCard({ perfume }: PerfumeCardProps) {
   const comparePrice = firstVariant?.comparePrice ? Number(firstVariant.comparePrice) : null
   const familyName = perfume.family?.name || "default"
   const imageUrl = firstVariant?.imageUrl
+  const prefersReduced = useReducedMotion()
 
   const [rotate, setRotate] = useState({ x: 0, y: 0 })
   const [glare, setGlare] = useState({ x: 50, y: 50 })
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (prefersReduced) return
     const rect = e.currentTarget.getBoundingClientRect()
     const x = e.clientX - rect.left
     const y = e.clientY - rect.top
     const centerX = rect.width / 2
     const centerY = rect.height / 2
-    const rotateX = (y - centerY) / 10
-    const rotateY = (centerX - x) / 10
+    const rotateX = (y - centerY) / 12
+    const rotateY = (centerX - x) / 12
     setRotate({ x: rotateX, y: rotateY })
     setGlare({ x: (x / rect.width) * 100, y: (y / rect.height) * 100 })
-  }, [])
+  }, [prefersReduced])
 
   const handleMouseLeave = useCallback(() => {
     setRotate({ x: 0, y: 0 })
@@ -57,23 +59,26 @@ export function PerfumeCard({ perfume }: PerfumeCardProps) {
   }, [])
 
   return (
-    <Link href={`/perfume/${perfume.slug}`} className="group block">
+    <Link href={`/perfume/${perfume.slug}`} className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring" aria-label={`Ver ${perfume.name} de ${perfume.brand.name}`}>
       <motion.div
-        className="bg-white rounded-xl overflow-hidden border border-zinc-100 hover:border-zinc-200 hover:shadow-xl hover:shadow-zinc-200/30 transition-all duration-300 h-full flex flex-col relative"
-        style={{
-          transform: `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
-          transition: "transform 0.1s ease-out, box-shadow 0.3s ease, border-color 0.3s ease",
+        className="bg-white rounded-xl overflow-hidden border border-zinc-100 hover:border-zinc-200 hover:shadow-lg transition-all duration-300 h-full flex flex-col relative"
+        style={prefersReduced ? {} : {
+          transform: `perspective(1200px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
+          transition: "transform 0.1s ease-out, box-shadow 0.25s ease, border-color 0.25s ease",
         }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
+        whileHover={prefersReduced ? {} : undefined}
       >
-        {/* Glare overlay */}
-        <div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none z-10 transition-opacity duration-300"
-          style={{
-            background: `radial-gradient(circle at ${glare.x}% ${glare.y}%, rgba(255,255,255,0.3) 0%, transparent 60%)`,
-          }}
-        />
+        {/* Glare overlay - skip if reduced motion */}
+        {!prefersReduced && (
+          <div
+            className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none z-10 transition-opacity duration-300"
+            style={{
+              background: `radial-gradient(circle at ${glare.x}% ${glare.y}%, rgba(255,255,255,0.3) 0%, transparent 60%)`,
+            }}
+          />
+        )}
 
         {/* Image area */}
         <div className="relative aspect-[4/5] overflow-hidden bg-zinc-100">
