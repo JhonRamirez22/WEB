@@ -12,17 +12,9 @@ const credentialsSchema = z.object({
   password: z.string().min(6),
 })
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
-  providers: [
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID!,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
-    }),
-    Apple({
-      clientId: process.env.AUTH_APPLE_ID!,
-      clientSecret: process.env.AUTH_APPLE_SECRET!,
-    }),
+// Helper to conditionally add providers based on env vars
+function getProviders() {
+  const providers = [
     Credentials({
       name: "credentials",
       credentials: {
@@ -53,7 +45,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       },
     }),
-  ],
+  ]
+
+  // Only add OAuth providers if credentials are configured
+  if (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET) {
+    providers.push(
+      Google({
+        clientId: process.env.AUTH_GOOGLE_ID,
+        clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      })
+    )
+  }
+
+  if (process.env.AUTH_APPLE_ID && process.env.AUTH_APPLE_SECRET) {
+    providers.push(
+      Apple({
+        clientId: process.env.AUTH_APPLE_ID,
+        clientSecret: process.env.AUTH_APPLE_SECRET,
+      })
+    )
+  }
+
+  return providers
+}
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(prisma),
+  providers: getProviders(),
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -77,4 +95,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: {
     strategy: "jwt",
   },
+  // Use a fallback secret for development, but require proper one in production
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "fallback-secret-change-in-production",
 })
