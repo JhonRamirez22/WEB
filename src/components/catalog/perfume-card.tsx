@@ -4,6 +4,7 @@ import Link from "next/link"
 import { motion } from "motion/react"
 import { Badge } from "@/components/ui/badge"
 import { Star, Check } from "lucide-react"
+import { useState, useCallback } from "react"
 
 interface PerfumeCardProps {
   perfume: {
@@ -21,6 +22,7 @@ interface PerfumeCardProps {
       id: string
       sizeMl: number
       price: number
+      comparePrice?: number
       imageUrl: string | null
       stock: number
     }[]
@@ -30,40 +32,74 @@ interface PerfumeCardProps {
 export function PerfumeCard({ perfume }: PerfumeCardProps) {
   const firstVariant = perfume.variants[0]
   const price = firstVariant ? Number(firstVariant.price) : 0
+  const comparePrice = firstVariant?.comparePrice ? Number(firstVariant.comparePrice) : null
   const familyName = perfume.family?.name || "default"
+  const imageUrl = firstVariant?.imageUrl
+
+  const [rotate, setRotate] = useState({ x: 0, y: 0 })
+  const [glare, setGlare] = useState({ x: 50, y: 50 })
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+    const rotateX = (y - centerY) / 10
+    const rotateY = (centerX - x) / 10
+    setRotate({ x: rotateX, y: rotateY })
+    setGlare({ x: (x / rect.width) * 100, y: (y / rect.height) * 100 })
+  }, [])
+
+  const handleMouseLeave = useCallback(() => {
+    setRotate({ x: 0, y: 0 })
+    setGlare({ x: 50, y: 50 })
+  }, [])
 
   return (
     <Link href={`/perfume/${perfume.slug}`} className="group block">
       <motion.div
-        className="bg-white rounded-xl overflow-hidden border border-zinc-100 hover:border-zinc-200 hover:shadow-lg hover:shadow-zinc-200/50 transition-all duration-300 h-full flex flex-col"
-        whileHover={{ y: -4 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="bg-white rounded-xl overflow-hidden border border-zinc-100 hover:border-zinc-200 hover:shadow-xl hover:shadow-zinc-200/30 transition-all duration-300 h-full flex flex-col relative"
+        style={{
+          transform: `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
+          transition: "transform 0.1s ease-out, box-shadow 0.3s ease, border-color 0.3s ease",
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
       >
-        {/* Image area — static image, animated CARD not image */}
+        {/* Glare overlay */}
+        <div
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none z-10 transition-opacity duration-300"
+          style={{
+            background: `radial-gradient(circle at ${glare.x}% ${glare.y}%, rgba(255,255,255,0.3) 0%, transparent 60%)`,
+          }}
+        />
+
+        {/* Image area */}
         <div className="relative aspect-[4/5] overflow-hidden bg-zinc-100">
-          {firstVariant?.imageUrl ? (
+          {imageUrl ? (
             <img
-              src={firstVariant.imageUrl}
+              src={imageUrl}
               alt={perfume.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               loading="lazy"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-50 to-zinc-100 relative">
-              {/* Brand initial */}
               <span className="text-6xl font-bold text-zinc-200/80 select-none">
                 {perfume.brand.name[0]}
               </span>
-
-              {/* Subtle decorative elements */}
               <div className="absolute top-6 right-6 w-16 h-16 border border-zinc-200/50 rounded-full" />
               <div className="absolute bottom-8 left-8 w-10 h-10 border border-zinc-200/30 rounded-full" />
             </div>
           )}
 
+          {/* Gradient overlay on image */}
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
           {/* Family color indicator dot */}
           <div className="absolute top-3 left-3">
-            <div 
+            <div
               className="w-2.5 h-2.5 rounded-full ring-2 ring-white/80"
               style={{ backgroundColor: getFamilyColor(familyName) }}
             />
@@ -130,9 +166,16 @@ export function PerfumeCard({ perfume }: PerfumeCardProps) {
           {/* Price + Concentration */}
           <div className="flex items-end justify-between mt-4 pt-3 border-t border-zinc-50">
             <div>
-              <p className="text-lg font-bold text-zinc-950">
-                ${price.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold text-zinc-950">
+                  ${price.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </p>
+                {comparePrice && comparePrice > price && (
+                  <p className="text-xs text-zinc-400 line-through">
+                    ${comparePrice.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                  </p>
+                )}
+              </div>
               {firstVariant && (
                 <p className="text-[11px] text-zinc-400 mt-0.5">
                   {firstVariant.sizeMl}ml
@@ -158,6 +201,8 @@ function getFamilyColor(familyName: string): string {
     "Fougère": "#059669",
     "Chipre": "#6B7280",
     "Cuero": "#451A03",
+    "Frutal": "#E11D48",
+    "Acuática": "#0EA5E9",
   }
   return colors[familyName] || "#10B981"
 }

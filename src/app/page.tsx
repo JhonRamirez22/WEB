@@ -1,12 +1,11 @@
-import { Suspense } from "react"
 import Link from "next/link"
 import { prisma } from "@/lib/db"
+import { serializeData } from "@/lib/utils"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { CartDrawer } from "@/components/cart-drawer"
 import { PerfumeCard } from "@/components/catalog/perfume-card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { ArrowRight, ShieldCheck, Truck, RotateCcw, Sparkles } from "lucide-react"
 import { Reveal } from "@/components/animations/reveal"
 import { HeroSection } from "@/components/sections/hero-section"
@@ -26,10 +25,10 @@ async function getFeaturedPerfumes() {
     orderBy: { createdAt: "desc" },
   })
 
-  return perfumes.map((p) => ({
+  return perfumes.map((p) => serializeData({
     ...p,
-    averageRating: p.reviews.length > 0 
-      ? Math.round((p.reviews.reduce((s, r) => s + r.rating, 0) / p.reviews.length) * 10) / 10 
+    averageRating: p.reviews.length > 0
+      ? Math.round((p.reviews.reduce((s, r) => s + r.rating, 0) / p.reviews.length) * 10) / 10
       : 0,
     reviewCount: p.reviews.length,
   }))

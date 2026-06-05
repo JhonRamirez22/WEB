@@ -135,10 +135,10 @@ export function Header() {
           {/* User Menu */}
           {session ? (
             <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+              <DropdownMenuTrigger asChild>
+                <button className="inline-flex items-center justify-center rounded-lg text-sm font-medium h-8 w-8 hover:bg-zinc-100">
                   <User className="h-4 w-4 text-zinc-500" />
-                </Button>
+                </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 rounded-xl">
                 <div className="px-3 py-2">
@@ -146,20 +146,20 @@ export function Header() {
                   <p className="text-xs text-zinc-400">{session.user.email}</p>
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem >
-                  <Link href="/cuenta/pedidos">Mis Pedidos</Link>
+                <DropdownMenuItem>
+                  <Link href="/cuenta/pedidos" className="w-full">Mis Pedidos</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem >
-                  <Link href="/cuenta/direcciones">Direcciones</Link>
+                <DropdownMenuItem>
+                  <Link href="/cuenta/direcciones" className="w-full">Direcciones</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem >
-                  <Link href="/cuenta/perfil">Mi Perfil</Link>
+                <DropdownMenuItem>
+                  <Link href="/cuenta/perfil" className="w-full">Mi Perfil</Link>
                 </DropdownMenuItem>
                 {(userRole === "ADMIN" || userRole === "GESTOR") && (
                   <>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem >
-                      <Link href="/admin">
+                    <DropdownMenuItem>
+                      <Link href="/admin" className="flex items-center w-full">
                         <Shield className="mr-2 h-3.5 w-3.5" />
                         Panel Administrativo
                       </Link>
@@ -177,9 +177,9 @@ export function Header() {
             </DropdownMenu>
           ) : (
             <Link href="/auth/login">
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="text-sm font-medium"
               >
                 Iniciar Sesión
@@ -189,10 +189,10 @@ export function Header() {
 
           {/* Mobile Menu */}
           <Sheet>
-            <SheetTrigger className="md:hidden">
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Menu className="h-4 w-4" />
-              </Button>
+            <SheetTrigger asChild className="md:hidden">
+              <button className="inline-flex items-center justify-center rounded-lg text-sm font-medium h-8 w-8 hover:bg-zinc-100">
+                <Menu className="h-4 w-4 text-zinc-500" />
+              </button>
             </SheetTrigger>
             <SheetContent side="right" className="w-80">
               <nav className="flex flex-col space-y-1 mt-8">

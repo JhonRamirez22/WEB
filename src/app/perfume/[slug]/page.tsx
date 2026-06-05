@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/db"
+import { serializeData } from "@/lib/utils"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { CartDrawer } from "@/components/cart-drawer"
@@ -41,11 +42,11 @@ async function getPerfume(slug: string) {
       ? Math.round((perfume.reviews.reduce((sum, r) => sum + r.rating, 0) / perfume.reviews.length) * 10) / 10
       : 0
 
-  return {
+  return serializeData({
     ...perfume,
     notesByPosition,
     averageRating: avgRating,
-  }
+  })
 }
 
 export default async function PerfumeDetailPage({ params }: { params: Promise<{ slug: string }> }) {
