@@ -1,0 +1,348 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CLIENTE
+  GESTOR
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDIENTE
+  PAGADO
+  ENVIADO
+  ENTREGADO
+  CANCELADO
+  REEMBOLSADO
+}
+
+enum NotePosition {
+  SALIDA
+  CORAZON
+  FONDO
+}
+
+enum Concentration {
+  EAU_DE_COLOGNE
+  EAU_DE_TOILETTE
+  EAU_DE_PARFUM
+  PARFUM
+  EXTRAIT
+}
+
+enum Gender {
+  MASCULINO
+  FEMENINO
+  UNISEX
+}
+
+enum CouponType {
+  PORCENTAJE
+  MONTO_FIJO
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime? @map("email_verified")
+  image         String?
+  password      String?   // Hashed password for local auth
+  role          UserRole  @default(CLIENTE)
+  phone         String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  accounts      Account[]
+  sessions      Session[]
+  addresses     Address[]
+  orders        Order[]
+  reviews       Review[]
+  cart          Cart?
+
+  @@map("users")
+}
+
+model Address {
+  id         String  @id @default(cuid())
+  userId     String  @map("user_id")
+  name       String  // e.g. "Casa", "Oficina"
+  address1   String
+  address2   String?
+  city       String
+  province   String?
+  country    String
+  zip        String
+  isDefault  Boolean @default(false) @map("is_default")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
+}
+
+model Brand {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  logoUrl     String?  @map("logo_url")
+  country     String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  perfumes Perfume[]
+
+  @@map("brands")
+}
+
+model OlfactoryFamily {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g. "Cítrica", "Floral"
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  perfumes Perfume[]
+
+  @@map("olfactory_families")
+}
+
+model OlfactoryNote {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g. "Bergamota", "Jazmín"
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  perfumeNotes PerfumeNote[]
+
+  @@map("olfactory_notes")
+}
+
+model Perfume {
+  id               String        @id @default(cuid())
+  name             String
+  slug             String        @unique
+  description      String        @db.Text
+  brandId          String        @map("brand_id")
+  familyId         String        @map("family_id")
+  concentration    Concentration
+  gender           Gender
+  year             Int?
+  perfumer         String?
+  originCountry    String?       @map("origin_country")
+  isPremium        Boolean       @default(false) @map("is_premium")
+  isVerified       Boolean       @default(true) @map("is_verified")
+  averageRating    Float         @default(0) @map("average_rating")
+  reviewCount      Int           @default(0) @map("review_count")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  brand        Brand          @relation(fields: [brandId], references: [id])
+  family       OlfactoryFamily @relation(fields: [familyId], references: [id])
+  variants     Variant[]
+  perfumeNotes PerfumeNote[]
+  reviews      Review[]
+  cartItems    CartItem[]
+  orderItems   OrderItem[]
+
+  @@map("perfumes")
+}
+
+model PerfumeNote {
+  id        String       @id @default(cuid())
+  perfumeId String       @map("perfume_id")
+  noteId    String       @map("note_id")
+  position  NotePosition
+
+  perfume Perfume       @relation(fields: [perfumeId], references: [id], onDelete: Cascade)
+  note    OlfactoryNote @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  @@unique([perfumeId, noteId, position])
+  @@map("perfume_notes")
+}
+
+model Variant {
+  id          String   @id @default(cuid())
+  perfumeId   String   @map("perfume_id")
+  sizeMl      Int      @map("size_ml") // e.g. 30, 50, 100
+  sku         String   @unique
+  price       Decimal  @db.Decimal(10, 2)
+  comparePrice Decimal? @map("compare_price") @db.Decimal(10, 2)
+  stock       Int      @default(0)
+  isAvailable Boolean  @default(true) @map("is_available")
+  imageUrl    String?  @map("image_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  perfume   Perfume    @relation(fields: [perfumeId], references: [id], onDelete: Cascade)
+  cartItems CartItem[]
+  orderItems OrderItem[]
+
+  @@map("variants")
+}
+
+model Cart {
+  id        String   @id @default(cuid())
+  userId    String?  @unique @map("user_id")
+  sessionId String?  @unique @map("session_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user     User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items    CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String   @map("cart_id")
+  perfumeId String   @map("perfume_id")
+  variantId String   @map("variant_id")
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  perfume Perfume @relation(fields: [perfumeId], references: [id])
+  variant Variant @relation(fields: [variantId], references: [id])
+
+  @@unique([cartId, variantId])
+  @@map("cart_items")
+}
+
+model Coupon {
+  id          String     @id @default(cuid())
+  code        String     @unique
+  type        CouponType
+  value       Decimal    @db.Decimal(10, 2)
+  minPurchase Decimal?   @map("min_purchase") @db.Decimal(10, 2)
+  maxUses     Int?       @map("max_uses")
+  usedCount   Int        @default(0) @map("used_count")
+  startsAt    DateTime   @map("starts_at")
+  endsAt      DateTime   @map("ends_at")
+  isActive    Boolean    @default(true) @map("is_active")
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  orders Order[]
+
+  @@map("coupons")
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String      @map("user_id")
+  status          OrderStatus @default(PENDIENTE)
+  subtotal        Decimal     @db.Decimal(10, 2)
+  taxAmount       Decimal     @map("tax_amount") @db.Decimal(10, 2)
+  shippingCost    Decimal     @map("shipping_cost") @db.Decimal(10, 2)
+  discountAmount  Decimal     @default(0) @map("discount_amount") @db.Decimal(10, 2)
+  total           Decimal     @db.Decimal(10, 2)
+  couponId        String?     @map("coupon_id")
+  shippingAddress Json        @map("shipping_address")
+  billingAddress  Json        @map("billing_address")
+  trackingNumber  String?     @map("tracking_number")
+  carrier         String?
+  isGift          Boolean     @default(false) @map("is_gift")
+  giftMessage     String?     @map("gift_message")
+  giftPackaging   String?     @map("gift_packaging")
+  paymentMethod   String      @map("payment_method")
+  paymentIntentId String?     @map("payment_intent_id")
+  paidAt          DateTime?   @map("paid_at")
+  shippedAt       DateTime?   @map("shipped_at")
+  deliveredAt     DateTime?   @map("delivered_at")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  user       User        @relation(fields: [userId], references: [id])
+  coupon     Coupon?     @relation(fields: [couponId], references: [id])
+  items      OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String  @map("order_id")
+  perfumeId String  @map("perfume_id")
+  variantId String  @map("variant_id")
+  quantity  Int
+  unitPrice Decimal @map("unit_price") @db.Decimal(10, 2)
+  total     Decimal @db.Decimal(10, 2)
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  perfume Perfume @relation(fields: [perfumeId], references: [id])
+  variant Variant @relation(fields: [variantId], references: [id])
+
+  @@map("order_items")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  perfumeId String   @map("perfume_id")
+  rating    Int      // 1-5
+  title     String?
+  comment   String?  @db.Text
+  longevity Int?     // 1-5
+  sillage   Int?     // 1-5
+  isVerified Boolean @default(false) @map("is_verified")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  perfume Perfume @relation(fields: [perfumeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, perfumeId])
+  @@map("reviews")
+}
