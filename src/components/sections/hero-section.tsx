@@ -2,128 +2,116 @@
 
 import Link from "next/link"
 import { motion, useReducedMotion } from "motion/react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Sparkles } from "lucide-react"
 import { useState, useEffect } from "react"
+import { ArrowRight, Sparkles } from "lucide-react"
 
 const heroImages = [
-  "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800&q=80",
-  "https://images.unsplash.com/photo-1565843708714-52ecf69ab0f0?w=800&q=80",
-  "https://images.unsplash.com/photo-1594035910387-fae6c6c2abda?w=800&q=80",
-  "https://images.unsplash.com/photo-1523293182086-38f79cf89a5b?w=800&q=80",
+  { src: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=1400&q=85", position: "center 30%" },
+  { src: "https://images.unsplash.com/photo-1565843708714-52ecf69ab0f0?w=1400&q=85", position: "center 40%" },
+  { src: "https://images.unsplash.com/photo-1594035910387-fae6c6c2abda?w=1400&q=85", position: "center 35%" },
 ]
 
 export function HeroSection() {
-  const [currentImage, setCurrentImage] = useState(0)
+  const [current, setCurrent] = useState(0)
   const prefersReduced = useReducedMotion()
 
   useEffect(() => {
     if (prefersReduced) return
-    const timer = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % heroImages.length)
-    }, 5000)
-    return () => clearInterval(timer)
+    const t = setInterval(() => setCurrent((p) => (p + 1) % heroImages.length), 6000)
+    return () => clearInterval(t)
   }, [prefersReduced])
 
   return (
-    <section className="min-h-[100dvh] flex items-center relative overflow-hidden">
-      {/* Background gradient + texture */}
-      <div className="absolute inset-0 bg-gradient-to-br from-zinc-100 via-white to-zinc-50" />
-      <div className="absolute inset-0 opacity-[0.03] noise" />
-
-      <div className="container mx-auto px-4 lg:px-12 max-w-[1400px] relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Left: Copy */}
+    <section className="relative min-h-screen flex items-end pb-16 md:pb-24 lg:pb-32 overflow-hidden">
+      {/* Full-bleed image layer */}
+      <div className="absolute inset-0">
+        {heroImages.map((img, i) => (
           <motion.div
-            className="space-y-8"
-            initial={prefersReduced ? {} : { opacity: 0, x: -40 }}
-            animate={prefersReduced ? {} : { opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            key={i}
+            className="absolute inset-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: i === current ? 1 : 0 }}
+            transition={{ duration: prefersReduced ? 0 : 1.5, ease: "easeInOut" }}
           >
-            <Badge
-              variant="secondary"
-              className="bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 text-xs tracking-wide uppercase"
-            >
-              <Sparkles className="w-3 h-3 mr-1" />
-              Nueva Colección 2024
-            </Badge>
+            <img
+              src={img.src}
+              alt=""
+              className="w-full h-full object-cover"
+              style={{ objectPosition: img.position }}
+              loading={i === 0 ? "eager" : "lazy"}
+            />
+          </motion.div>
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent" />
+      </div>
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] text-zinc-950 font-serif">
-              Descubre tu{" "}
-              <span className="text-emerald-600">Esencia</span>
-            </h1>
-
-            <p className="text-lg md:text-xl text-zinc-500 leading-relaxed max-w-[55ch]">
-              Perfumería de lujo con las fragancias más exclusivas del mundo.
-              Autenticidad garantizada en cada botella.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/catalogo">
-                <Button
-                  size="lg"
-                  className="bg-zinc-950 text-white hover:bg-zinc-800 rounded-full px-8"
-                >
-                  Explorar Catálogo
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="/quiz-olfativo">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="rounded-full px-8 border-zinc-200 hover:bg-zinc-100"
-                >
-                  Quiz Olfativo
-                </Button>
-              </Link>
-            </div>
+      {/* Content */}
+      <div className="container mx-auto px-6 lg:px-16 max-w-[1400px] relative z-10">
+        <motion.div
+          className="max-w-2xl"
+          initial={prefersReduced ? {} : { opacity: 0, y: 40 }}
+          animate={prefersReduced ? {} : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <motion.div
+            className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full bg-background/80 backdrop-blur-sm border border-border/50"
+            initial={prefersReduced ? {} : { opacity: 0, scale: 0.9 }}
+            animate={prefersReduced ? {} : { opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5, duration: 0.4 }}
+          >
+            <Sparkles className="size-3.5 text-primary" />
+            <span className="text-xs font-medium uppercase tracking-[0.2em] text-foreground/70">
+              Colección Exclusiva
+            </span>
           </motion.div>
 
-          {/* Right: Visual - Image carousel */}
-          <motion.div
-            className="relative aspect-[4/5] lg:aspect-square"
-            initial={prefersReduced ? {} : { opacity: 0, x: 40 }}
-            animate={prefersReduced ? {} : { opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {/* Main image with crossfade */}
-            <div className="absolute inset-0 rounded-3xl overflow-hidden bg-zinc-100">
-              {heroImages.map((img, i) => (
-                <motion.img
-                  key={i}
-                  src={img}
-                  alt={`Perfume ${i + 1}`}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  loading={i === 0 ? "eager" : "lazy"}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: i === currentImage ? 1 : 0 }}
-                  transition={{ duration: prefersReduced ? 0 : 1 }}
-                />
-              ))}
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900/20 via-transparent to-transparent" />
-            </div>
+          <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-none text-foreground mb-6">
+            El arte de
+            <br />
+            <span className="italic font-normal">la perfumería</span>
+          </h1>
 
-            {/* Decorative elements */}
-            <div className="absolute top-8 right-8 w-16 h-16 border border-white/30 rounded-full" />
-            <div className="absolute bottom-12 left-12 w-12 h-12 border border-white/20 rounded-full" />
+          <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-lg mb-10 font-light">
+            Fragancias de nicho seleccionadas por maestros perfumistas. Cada esencia, una obra maestra. Cada frasco, una declaración.
+          </p>
 
-            {/* Dot indicators */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
-              {heroImages.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentImage(i)}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    i === currentImage ? "bg-white w-5" : "bg-white/40"
-                  }`}
-                />
-              ))}
-            </div>
-          </motion.div>
-        </div>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link href="/catalogo">
+              <motion.button
+                className="px-8 py-4 bg-foreground text-background rounded-full text-sm font-medium tracking-wide hover:bg-foreground/90 transition-colors inline-flex items-center gap-2 group"
+                whileHover={{ scale: prefersReduced ? 1 : 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Descubrir Colección
+                <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
+              </motion.button>
+            </Link>
+            <Link href="/quiz-olfativo">
+              <motion.button
+                className="px-8 py-4 rounded-full text-sm font-medium tracking-wide border border-border hover:bg-secondary transition-colors"
+                whileHover={{ scale: prefersReduced ? 1 : 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Encuentra tu Esencia
+              </motion.button>
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Dot indicators */}
+      <div className="absolute bottom-8 right-8 lg:right-16 flex gap-3 z-10">
+        {heroImages.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrent(i)}
+            className={`w-2 h-2 rounded-full transition-all duration-500 ${
+              i === current ? "bg-foreground w-6" : "bg-foreground/30 hover:bg-foreground/50"
+            }`}
+            aria-label={`Slide ${i + 1}`}
+          />
+        ))}
       </div>
     </section>
   )

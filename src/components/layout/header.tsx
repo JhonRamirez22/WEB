@@ -22,68 +22,57 @@ export function Header() {
   const { totalItems, toggleCart } = useCartStore()
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
-
   const userRole = session?.user?.role
 
   return (
-    <motion.header 
-      className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-zinc-100"
-      initial={{ y: -20, opacity: 0 }}
+    <motion.header
+      className="sticky top-0 z-50 w-full bg-background/90 backdrop-blur-xl border-b border-border/50"
+      initial={{ y: -16, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className="container mx-auto px-4 lg:px-12 h-16 flex items-center justify-between max-w-[1400px]">
+      <div className="container mx-auto px-6 lg:px-16 h-16 flex items-center justify-between max-w-[1400px]">
         {/* Logo */}
         <Link href="/" className="flex items-center">
-          <span className="text-lg font-bold tracking-tight text-zinc-950">
+          <span className="font-serif text-xl tracking-tight text-foreground">
             L&apos;Essence
           </span>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          <Link
-            href="/catalogo"
-            className="text-sm font-medium text-zinc-500 hover:text-zinc-950 transition-colors"
-          >
-            Catálogo
-          </Link>
-          <Link
-            href="/catalogo?gender=MASCULINO"
-            className="text-sm font-medium text-zinc-500 hover:text-zinc-950 transition-colors"
-          >
-            Hombre
-          </Link>
-          <Link
-            href="/catalogo?gender=FEMENINO"
-            className="text-sm font-medium text-zinc-500 hover:text-zinc-950 transition-colors"
-          >
-            Mujer
-          </Link>
-          <Link
-            href="/catalogo"
-            className="text-sm font-medium text-zinc-500 hover:text-zinc-950 transition-colors"
-          >
-            Nicho
-          </Link>
+        <nav className="hidden md:flex items-center gap-8">
+          {[
+            { label: "Catálogo", href: "/catalogo" },
+            { label: "Hombre", href: "/catalogo?gender=MASCULINO" },
+            { label: "Mujer", href: "/catalogo?gender=FEMENINO" },
+            { label: "Nicho", href: "/catalogo?isPremium=true" },
+          ].map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-1">
           {/* Search */}
           <AnimatePresence>
             {isSearchOpen ? (
-              <motion.div 
+              <motion.div
                 className="flex items-center"
                 initial={{ width: 0, opacity: 0 }}
                 animate={{ width: "auto", opacity: 1 }}
                 exit={{ width: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.2 }}
               >
                 <input
                   type="search"
-                  placeholder="Buscar perfumes..."
-                  className="w-48 lg:w-64 h-9 rounded-full border border-zinc-200 bg-zinc-50 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  placeholder="Buscar..."
+                  className="w-40 lg:w-56 h-9 rounded-full border border-border bg-secondary px-4 text-sm focus:outline-none focus:ring-2 focus:ring-ring/20"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   autoFocus
@@ -93,40 +82,22 @@ export function Header() {
                     }
                   }}
                 />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 ml-1"
-                  onClick={() => setIsSearchOpen(false)}
-                >
-                  <span className="text-xs text-zinc-400">✕</span>
+                <Button variant="ghost" size="icon" className="size-8 ml-1" onClick={() => setIsSearchOpen(false)}>
+                  <span className="text-xs text-muted-foreground">✕</span>
                 </Button>
               </motion.div>
             ) : (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setIsSearchOpen(true)}
-              >
-                <Search className="h-4 w-4 text-zinc-500" />
+              <Button variant="ghost" size="icon" className="size-9" onClick={() => setIsSearchOpen(true)} aria-label="Buscar">
+                <Search className="size-4 text-muted-foreground" />
               </Button>
             )}
           </AnimatePresence>
 
           {/* Cart */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative h-8 w-8"
-            onClick={toggleCart}
-          >
-            <ShoppingBag className="h-4 w-4 text-zinc-500" />
+          <Button variant="ghost" size="icon" className="relative size-9" onClick={toggleCart} aria-label={`Carrito, ${totalItems} artículos`}>
+            <ShoppingBag className="size-4 text-muted-foreground" />
             {totalItems > 0 && (
-              <Badge
-                variant="default"
-                className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px] bg-emerald-600 text-white border-0"
-              >
+              <Badge className="absolute -top-0.5 -right-0.5 size-4 flex items-center justify-center p-0 text-[9px] bg-foreground text-background border-0 rounded-full">
                 {totalItems}
               </Badge>
             )}
@@ -135,73 +106,57 @@ export function Header() {
           {/* User Menu */}
           {session ? (
             <DropdownMenu>
-              <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-lg text-sm font-medium h-8 w-8 hover:bg-zinc-100">
-                <User className="h-4 w-4 text-zinc-500" />
+              <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-sm size-9 hover:bg-secondary" aria-label="Menú de usuario">
+                <User className="size-4 text-muted-foreground" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 rounded-xl">
+              <DropdownMenuContent align="end" className="w-56">
                 <div className="px-3 py-2">
                   <p className="text-sm font-medium">{session.user.name}</p>
-                  <p className="text-xs text-zinc-400">{session.user.email}</p>
+                  <p className="text-xs text-muted-foreground">{session.user.email}</p>
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Link href="/cuenta/pedidos" className="w-full">Mis Pedidos</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href="/cuenta/direcciones" className="w-full">Direcciones</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href="/cuenta/perfil" className="w-full">Mi Perfil</Link>
-                </DropdownMenuItem>
+                <DropdownMenuItem><Link href="/cuenta/pedidos" className="w-full">Mis Pedidos</Link></DropdownMenuItem>
+                <DropdownMenuItem><Link href="/cuenta/direcciones" className="w-full">Direcciones</Link></DropdownMenuItem>
+                <DropdownMenuItem><Link href="/cuenta/perfil" className="w-full">Mi Perfil</Link></DropdownMenuItem>
                 {(userRole === "ADMIN" || userRole === "GESTOR") && (
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>
                       <Link href="/admin" className="flex items-center w-full">
-                        <Shield className="mr-2 h-3.5 w-3.5" />
-                        Panel Administrativo
+                        <Shield className="mr-2 size-3.5" /> Panel
                       </Link>
                     </DropdownMenuItem>
                   </>
                 )}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                >
-                  <LogOut className="mr-2 h-3.5 w-3.5" />
-                  Cerrar Sesión
+                <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
+                  <LogOut className="mr-2 size-3.5" /> Cerrar Sesión
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Link href="/auth/login">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-sm font-medium"
-              >
-                Iniciar Sesión
-              </Button>
+            <Link href="/auth/login" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors ml-2">
+              Iniciar Sesión
             </Link>
           )}
 
           {/* Mobile Menu */}
           <Sheet>
-            <SheetTrigger className="md:hidden inline-flex items-center justify-center rounded-lg text-sm font-medium h-8 w-8 hover:bg-zinc-100">
-              <Menu className="h-4 w-4 text-zinc-500" />
+            <SheetTrigger className="md:hidden inline-flex items-center justify-center size-9 hover:bg-secondary rounded-sm" aria-label="Abrir menú">
+              <Menu className="size-4 text-muted-foreground" />
             </SheetTrigger>
             <SheetContent side="right" className="w-80">
-              <nav className="flex flex-col space-y-1 mt-8">
+              <nav className="flex flex-col gap-1 mt-8">
                 {[
                   { label: "Catálogo", href: "/catalogo" },
                   { label: "Hombre", href: "/catalogo?gender=MASCULINO" },
                   { label: "Mujer", href: "/catalogo?gender=FEMENINO" },
-                  { label: "Nicho", href: "/catalogo" },
+                  { label: "Nicho", href: "/catalogo?isPremium=true" },
                 ].map((item) => (
                   <Link
                     key={item.label}
                     href={item.href}
-                    className="px-3 py-2.5 text-sm font-medium text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50 rounded-lg transition-colors"
+                    className="px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary rounded-sm transition-colors"
                   >
                     {item.label}
                   </Link>

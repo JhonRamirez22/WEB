@@ -6,62 +6,60 @@ import { Footer } from "@/components/layout/footer"
 import { CartDrawer } from "@/components/cart-drawer"
 import { PerfumeCard } from "@/components/catalog/perfume-card"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, ShieldCheck, Truck, RotateCcw, Sparkles } from "lucide-react"
+import { ArrowRight, ShieldCheck, Truck, RotateCcw } from "lucide-react"
 import { Reveal } from "@/components/animations/reveal"
 import { HeroSection } from "@/components/sections/hero-section"
 
 async function getFeaturedPerfumes() {
   const perfumes = await prisma.perfume.findMany({
-    take: 6,
+    take: 8,
     include: {
       brand: true,
       family: true,
-      variants: {
-        where: { isAvailable: true },
-        orderBy: { price: "asc" },
-      },
+      variants: { where: { isAvailable: true }, orderBy: { price: "asc" } },
       reviews: { select: { rating: true } },
     },
     orderBy: { createdAt: "desc" },
   })
-
-  return perfumes.map((p) => serializeData({
-    ...p,
-    averageRating: p.reviews.length > 0
-      ? Math.round((p.reviews.reduce((s, r) => s + r.rating, 0) / p.reviews.length) * 10) / 10
-      : 0,
-    reviewCount: p.reviews.length,
-  }))
+  return perfumes.map((p) =>
+    serializeData({
+      ...p,
+      averageRating: p.reviews.length
+        ? Math.round((p.reviews.reduce((s, r) => s + r.rating, 0) / p.reviews.length) * 10) / 10
+        : 0,
+      reviewCount: p.reviews.length,
+    })
+  )
 }
 
 export default async function HomePage() {
-  const featuredPerfumes = await getFeaturedPerfumes()
+  const featured = await getFeaturedPerfumes()
 
   return (
-    <div className="flex flex-col min-h-screen bg-zinc-50">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <CartDrawer />
 
       <main className="flex-1" id="main-content">
-        {/* HERO — Split-screen layout with motion */}
+        {/* HERO — Full-bleed editorial */}
         <HeroSection />
 
-        {/* TRUST BAR — Under hero, NOT inside it */}
-        <section className="border-y border-zinc-200 bg-white">
-          <div className="container mx-auto px-4 lg:px-12 max-w-[1400px]">
-            <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-zinc-100">
+        {/* TRUST BAR */}
+        <section className="border-y border-border bg-card">
+          <div className="container mx-auto px-6 lg:px-16 max-w-[1400px]">
+            <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-border">
               {[
-                { icon: ShieldCheck, label: "100% Auténtico", desc: "Garantía de originalidad" },
-                { icon: Truck, label: "Envío Rápido", desc: "24-48 horas" },
-                { icon: RotateCcw, label: "Devolución 30 Días", desc: "Satisfacción garantizada" },
-                { icon: Sparkles, label: "Experiencia Premium", desc: "Atención personalizada" },
+                { icon: ShieldCheck, label: "Autenticidad Garantizada", desc: "Cada fragancia es 100% original" },
+                { icon: Truck, label: "Envío Express", desc: "Entrega en 24-48 horas" },
+                { icon: RotateCcw, label: "30 Días de Prueba", desc: "Devolución sin preguntas" },
+                { icon: ShieldCheck, label: "Atención Personalizada", desc: "Asesoría por expertos" },
               ].map((item, i) => (
-                <Reveal key={item.label} delay={i * 0.1}>
-                  <div className="flex items-start gap-3 p-6 lg:p-8">
-                    <item.icon className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                <Reveal key={item.label} delay={i * 0.08}>
+                  <div className="flex items-start gap-3 px-6 py-6 lg:px-8 lg:py-7">
+                    <item.icon className="size-5 text-primary mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="font-medium text-sm text-zinc-900">{item.label}</p>
-                      <p className="text-xs text-zinc-400 mt-0.5">{item.desc}</p>
+                      <p className="text-sm font-medium text-foreground">{item.label}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
                     </div>
                   </div>
                 </Reveal>
@@ -70,95 +68,95 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* FEATURED — Asymmetric header + grid */}
+        {/* FEATURED PERFUMES */}
         <section className="py-24 lg:py-32">
-          <div className="container mx-auto px-4 lg:px-12 max-w-[1400px]">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+          <div className="container mx-auto px-6 lg:px-16 max-w-[1400px]">
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-16">
               <Reveal>
                 <div>
-                  <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-zinc-950">
-                    Fragancias Destacadas
-                  </h2>
-                  <p className="text-zinc-500 mt-3 max-w-md leading-relaxed">
-                    Nuestras piezas más codiciadas, seleccionadas por su arte y longevidad.
+                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground mb-4">
+                    Selección del Mes
                   </p>
+                  <h2 className="font-serif text-4xl lg:text-5xl text-foreground leading-none">
+                    Fragancias
+                    <br />
+                    <span className="italic font-normal">Destacadas</span>
+                  </h2>
                 </div>
               </Reveal>
               <Reveal delay={0.1}>
                 <Link href="/catalogo">
-                  <Button 
-                    variant="outline" 
-                    className="rounded-full border-zinc-200 hover:bg-zinc-100"
-                  >
-                    Ver Todo
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                  <Button variant="outline" className="rounded-full border-border hover:bg-secondary">
+                    Ver Colección Completa
+                    <ArrowRight className="ml-2 size-4" />
                   </Button>
                 </Link>
               </Reveal>
             </div>
-            
-            {featuredPerfumes.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {featuredPerfumes.map((perfume, i) => (
-                  <Reveal key={perfume.id} delay={i * 0.08}>
-                    <PerfumeCard perfume={perfume as any} />
+
+            {featured.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+                {featured.map((p, i) => (
+                  <Reveal key={p.id} delay={i * 0.06}>
+                    <PerfumeCard perfume={p as any} />
                   </Reveal>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 text-zinc-400">
-                No hay perfumes disponibles en este momento.
+              <div className="text-center py-16 text-muted-foreground">
+                <p className="font-serif text-2xl mb-2">Colección en preparación</p>
+                <p className="text-sm">Nuestros maestros perfumistas están seleccionando las mejores fragancias.</p>
               </div>
             )}
           </div>
         </section>
 
-        {/* CATEGORIES — Split layout, NOT centered cards */}
-        <section className="py-24 lg:py-32 bg-white">
-          <div className="container mx-auto px-4 lg:px-12 max-w-[1400px]">
+        {/* BRAND SHOWCASE — Editorial grid */}
+        <section className="py-12 lg:py-16 bg-card border-y border-border">
+          <div className="container mx-auto px-6 lg:px-16 max-w-[1400px]">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border">
+              {["Chanel", "Dior", "Creed", "Tom Ford", "YSL", "Hermès", "Le Labo", "Byredo"].map((brand, i) => (
+                <div key={brand} className="bg-card py-10 flex items-center justify-center">
+                  <Reveal delay={i * 0.05}>
+                    <span className="font-serif text-xl tracking-wider text-muted-foreground/50 hover:text-foreground transition-colors cursor-default select-none">
+                      {brand}
+                    </span>
+                  </Reveal>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CATEGORIES — Dramatic split */}
+        <section className="py-24 lg:py-32">
+          <div className="container mx-auto px-6 lg:px-16 max-w-[1400px]">
             <Reveal>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-zinc-950 mb-16">
-                Explora por Categoría
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground mb-4">
+                Explora
+              </p>
+              <h2 className="font-serif text-4xl lg:text-5xl text-foreground leading-none mb-16">
+                Por Categoría
               </h2>
             </Reveal>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { 
-                  href: "/catalogo?gender=MASCULINO", 
-                  label: "Para Él", 
-                  desc: "Fragancias masculinas sofisticadas",
-                  bg: "from-slate-900 to-slate-800"
-                },
-                { 
-                  href: "/catalogo?gender=FEMENINO", 
-                  label: "Para Ella", 
-                  desc: "Fragancias femeninas elegantes",
-                  bg: "from-rose-900 to-rose-800"
-                },
-                { 
-                  href: "/catalogo", 
-                  label: "Perfumes de Nicho", 
-                  desc: "Fragancias exclusivas y artesanales",
-                  bg: "from-emerald-900 to-emerald-800"
-                },
+                { href: "/catalogo?gender=MASCULINO", label: "Para Él", desc: "Fragancias masculinas", img: "https://images.unsplash.com/photo-1588701607060-4104b1776b62?w=800&q=80" },
+                { href: "/catalogo?gender=FEMENINO", label: "Para Ella", desc: "Fragancias femeninas", img: "https://images.unsplash.com/photo-1565843708714-52ecf69ab0f0?w=800&q=80" },
+                { href: "/catalogo", label: "Nichos & Exclusivos", desc: "Ediciones limitadas", img: "https://images.unsplash.com/photo-1594035910387-fae6c6c2abda?w=800&q=80" },
               ].map((cat, i) => (
                 <Reveal key={cat.label} delay={i * 0.1}>
-                  <Link href={cat.href}>
-                    <div className={`group relative h-96 rounded-2xl overflow-hidden bg-gradient-to-br ${cat.bg} transition-transform duration-500 hover:scale-[1.02]`}>
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-500" />
-                      
-                      {/* Decorative circle */}
-                      <div className="absolute -top-12 -right-12 w-48 h-48 border border-white/10 rounded-full group-hover:scale-110 transition-transform duration-700" />
-                      <div className="absolute -bottom-8 -left-8 w-32 h-32 border border-white/5 rounded-full" />
-                      
-                      <div className="absolute bottom-8 left-8 text-white">
-                        <h3 className="text-2xl font-bold mb-2">{cat.label}</h3>
-                        <p className="text-sm text-white/70">{cat.desc}</p>
-                        <div className="flex items-center gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <span className="text-sm font-medium">Explorar</span>
-                          <ArrowRight className="w-4 h-4" />
-                        </div>
+                  <Link href={cat.href} className="group block">
+                    <div className="relative aspect-[4/5] overflow-hidden rounded-sm mb-4">
+                      <img src={cat.img} alt={cat.label} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-6">
+                        <h3 className="font-serif text-2xl text-white">{cat.label}</h3>
+                        <p className="text-sm text-white/70 mt-1 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          {cat.desc}
+                          <ArrowRight className="size-3.5" />
+                        </p>
                       </div>
                     </div>
                   </Link>
@@ -168,33 +166,32 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* QUIZ CTA — Full-bleed color block */}
-        <section className="py-24 lg:py-32 bg-zinc-950 relative overflow-hidden">
-          {/* Subtle noise texture */}
-          <div className="absolute inset-0 opacity-[0.02] noise" />
-          
-          <div className="container mx-auto px-4 lg:px-12 max-w-[1400px] relative z-10">
+        {/* QUIZ CTA */}
+        <section className="py-24 lg:py-32 bg-foreground text-background relative overflow-hidden">
+          <div className="absolute inset-0 opacity-[0.03] noise" />
+          <div className="container mx-auto px-6 lg:px-16 max-w-[1400px] relative z-10">
             <div className="max-w-2xl">
               <Reveal>
-                <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-6">
-                  ¿No sabes qué perfume elegir?
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-background/50 mb-4">
+                  Guía Personalizada
+                </p>
+                <h2 className="font-serif text-4xl lg:text-5xl text-background leading-none mb-6">
+                  Encuentra tu
+                  <br />
+                  <span className="italic font-normal">fragancia ideal</span>
                 </h2>
               </Reveal>
               <Reveal delay={0.1}>
-                <p className="text-lg text-zinc-400 leading-relaxed mb-8 max-w-lg">
-                  Responde nuestro quiz olfativo y descubre las 3 fragancias 
-                  perfectas para tu personalidad y estilo de vida.
+                <p className="text-base text-background/60 leading-relaxed mb-8 max-w-lg font-light">
+                  Responde nuestro quiz olfativo y descubre las 3 fragancias perfectas para tu personalidad y estilo.
                 </p>
               </Reveal>
               <Reveal delay={0.2}>
                 <Link href="/quiz-olfativo">
-                  <Button 
-                    size="lg" 
-                    className="bg-emerald-600 text-white hover:bg-emerald-500 rounded-full px-8"
-                  >
-                    Iniciar Quiz Olfativo
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                  <button className="px-8 py-4 bg-background text-foreground rounded-full text-sm font-medium tracking-wide hover:bg-background/90 transition-colors inline-flex items-center gap-2 group">
+                    Iniciar Quiz
+                    <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
+                  </button>
                 </Link>
               </Reveal>
             </div>
