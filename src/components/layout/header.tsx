@@ -189,10 +189,8 @@ export function Header() {
 
           {/* Mobile Menu */}
           <Sheet>
-            <SheetTrigger asChild className="md:hidden">
-              <button className="inline-flex items-center justify-center rounded-lg text-sm font-medium h-8 w-8 hover:bg-zinc-100">
-                <Menu className="h-4 w-4 text-zinc-500" />
-              </button>
+            <SheetTrigger className="md:hidden inline-flex items-center justify-center rounded-lg text-sm font-medium h-8 w-8 hover:bg-zinc-100">
+              <Menu className="h-4 w-4 text-zinc-500" />
             </SheetTrigger>
             <SheetContent side="right" className="w-80">
               <nav className="flex flex-col space-y-1 mt-8">

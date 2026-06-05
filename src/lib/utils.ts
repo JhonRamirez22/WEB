@@ -7,9 +7,14 @@ export function cn(...inputs: ClassValue[]) {
 
 export function serializeData<T>(data: T): T {
   if (data === null || data === undefined) return data
-  if (typeof data === "object" && data !== null && "constructor" in data) {
-    const ctor = (data as any).constructor?.name
-    if (ctor === "Decimal") return Number(data) as unknown as T
+  if (typeof data === "object") {
+    // Prisma Decimal detection: has toNumber method or the internal s/e/d props
+    if ("toNumber" in data && typeof (data as any).toNumber === "function") {
+      return Number(data) as unknown as T
+    }
+    if ("s" in data && "e" in data && "d" in data && "constructor" in data) {
+      return Number(data) as unknown as T
+    }
   }
   if (Array.isArray(data)) return data.map(serializeData) as unknown as T
   if (typeof data === "object" && data !== null) {
