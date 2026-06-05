@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
-import { stripe } from "@/lib/stripe"
+import { stripe, isStripeConfigured } from "@/lib/stripe"
 
 export async function POST(req: Request) {
   try {
@@ -80,7 +80,7 @@ export async function POST(req: Request) {
         billingAddress,
         isGift: isGift || false,
         giftMessage,
-        paymentMethod: "stripe",
+        paymentMethod: isStripeConfigured ? "stripe" : "manual",
         items: {
           create: cart.items.map((item) => ({
             perfumeId: item.perfumeId,
@@ -92,6 +92,15 @@ export async function POST(req: Request) {
         },
       },
     })
+
+    // Si Stripe no está configurado, devolver orden sin checkout URL
+    if (!isStripeConfigured || !stripe) {
+      return NextResponse.json({
+        orderId: order.id,
+        checkoutUrl: null,
+        message: "Stripe no está configurado. Orden creada como pendiente de pago manual.",
+      })
+    }
 
     // Crear sesión de Stripe
     const stripeSession = await stripe.checkout.sessions.create({

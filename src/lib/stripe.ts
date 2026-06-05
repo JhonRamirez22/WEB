@@ -1,8 +1,12 @@
 import Stripe from "stripe"
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  typescript: true,
-})
+const secretKey = process.env.STRIPE_SECRET_KEY
+
+export const stripe = secretKey
+  ? new Stripe(secretKey, { typescript: true })
+  : null
+
+export const isStripeConfigured = !!stripe
 
 export const getStripeSession = async ({
   priceId,
@@ -13,6 +17,9 @@ export const getStripeSession = async ({
   domainUrl: string
   customerId: string
 }) => {
+  if (!stripe) {
+    throw new Error("Stripe no está configurado")
+  }
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
     mode: "payment",
