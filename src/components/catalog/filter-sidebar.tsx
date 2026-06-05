@@ -295,16 +295,14 @@ export function FilterSidebar({
 
       {/* Mobile */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger className="lg:hidden">
-          <Button variant="outline" size="sm" className="mb-4">
-            <Filter className="w-4 h-4 mr-2" />
-            Filtros
-            {hasActiveFilters && (
-              <Badge variant="secondary" className="ml-2 text-xs">
-                *
-              </Badge>
-            )}
-          </Button>
+        <SheetTrigger className="lg:hidden inline-flex items-center justify-center rounded-lg text-sm font-medium border border-zinc-200 bg-white hover:bg-zinc-100 h-9 px-4 mb-4">
+          <Filter className="w-4 h-4 mr-2" />
+          Filtros
+          {hasActiveFilters && (
+            <Badge variant="secondary" className="ml-2 text-xs">
+              *
+            </Badge>
+          )}
         </SheetTrigger>
         <SheetContent side="left" className="w-80">
           <SheetHeader>
